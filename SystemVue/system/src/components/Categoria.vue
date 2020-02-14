@@ -91,9 +91,11 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data() {
     return {
+      categorias:[],
       dialog: false,
       headers: [
         {
@@ -142,8 +144,17 @@ export default {
 
   created() {
     this.initialize();
+    this.list();
   },
   methods: {
+    list(){
+        let me=this;
+        axios.get('api/Categories/List').then(function(response){
+            me.categorias = response.data;
+        }).catch(function(error){
+
+        });
+    },
     initialize() {
       this.desserts = [
         {

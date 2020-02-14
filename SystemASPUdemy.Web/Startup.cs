@@ -25,6 +25,12 @@ namespace SystemASPUdemy.Web
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddCors(op =>
+            {
+                op.AddPolicy("All",
+                    bl => bl.WithOrigins("*").WithHeaders("*").WithMethods("*"));
+            });
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -38,6 +44,7 @@ namespace SystemASPUdemy.Web
                 app.UseHsts();
             }
 
+            app.UseCors("All");
             app.UseHttpsRedirection();
             app.UseMvc();
         }
