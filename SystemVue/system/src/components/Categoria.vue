@@ -3,9 +3,8 @@
     <v-flex>
       <v-data-table
         :headers="headers"
-        :items="desserts"
-        :search="search"
-        sort-by="calories"
+        :items="categorias"
+        :search="search"        
         class="elevation-1"
       >
         <template v-slot:top>
@@ -23,7 +22,7 @@
               </template>
               <v-card>
                 <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
+                  <span class="headline text-center" >{{ formTitle }}</span>
                 </v-card-title>
 
                 <v-card-text>
@@ -32,33 +31,21 @@
                       <v-col cols="12" sm="6" md="4">
                         <v-text-field
                           v-model="editedItem.name"
-                          label="Dessert name"
+                          label="Nombre"
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="6" md="4">
                         <v-text-field
-                          v-model="editedItem.calories"
-                          label="Calories"
+                          v-model="editedItem.description"
+                          label="Descripcion"
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.fat"
-                          label="Fat (g)"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.carbs"
-                          label="Carbs (g)"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.protein"
-                          label="Protein (g)"
-                        ></v-text-field>
-                      </v-col>
+                     <v-col cols="12" sm="6" md="4">
+                        <template v-slot:item.status="{ item }">
+                            <v-card-text v-if="item.status" class="blue--text">Activo</v-card-text>
+                            <v-card-text v-if="!item.status" class="red--text">Inactivo</v-card-text>
+                        </template>
+                      </v-col>                 
                     </v-row>
                   </v-container>
                 </v-card-text>
@@ -74,7 +61,7 @@
             </v-dialog>
           </v-toolbar>
         </template>
-        <template v-slot:item.action="{ item }">
+        <template v-slot:item.options="{ item }">
           <v-icon small class="mr-2" @click="editItem(item)">
             edit
           </v-icon>
@@ -83,7 +70,7 @@
           </v-icon>
         </template>
         <template v-slot:no-data>
-          <v-btn color="primary" @click="initialize">Reset</v-btn>
+          <v-btn color="primary" @click="initialize">Resetear</v-btn>
         </template>
       </v-data-table>
     </v-flex>
@@ -98,20 +85,12 @@ export default {
       categorias:[],
       dialog: false,
       headers: [
-        {
-          text: "Dessert (100g serving)",
-          align: "left",
-          sortable: false,
-          value: "name"
-        },
-        { text: "Calories", value: "calories" },
-        { text: "Fat (g)", value: "fat" },
-        { text: "Carbs (g)", value: "carbs" },
-        { text: "Protein (g)", value: "protein" },
-        { text: "Actions", value: "action", sortable: false }
+        { text: "Opciones", value: "options", sortable: false },
+        { text: "Nombre", value: "name" },
+        { text: "Descripcion", value: "description", sortable: false },
+        { text: "Estado", value: "status" }        
       ],
       search: '',
-      desserts: [],
       editedIndex: -1,
       editedItem: {
         name: "",
@@ -142,8 +121,7 @@ export default {
     }
   },
 
-  created() {
-    this.initialize();
+  created() {    
     this.list();
   },
   methods: {
@@ -152,82 +130,8 @@ export default {
         axios.get('api/Categories/List').then(function(response){
             me.categorias = response.data;
         }).catch(function(error){
-
+            console.log(error);
         });
-    },
-    initialize() {
-      this.desserts = [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7
-        }
-      ];
     },
 
     editItem(item) {
