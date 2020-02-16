@@ -4,7 +4,7 @@
       <v-data-table
         :headers="headers"
         :items="categorias"
-        :search="search"        
+        :search="search"
         class="elevation-1"
       >
         <template v-slot:top>
@@ -12,65 +12,62 @@
             <v-toolbar-title>Categorias</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-            <v-text-field class="text-md-center" v-model="search" append-icon="search" label="Busqueda" single-line hide-details></v-text-field>
+            <v-text-field
+              class="text-md-center"
+              v-model="search"
+              append-icon="search"
+              label="Busqueda"
+              single-line
+              hide-details
+            ></v-text-field>
             <v-spacer></v-spacer>
+
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on }">
-                <v-btn color="primary" dark class="mb-2" v-on="on"
-                  >New Item</v-btn
-                >
+                <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo</v-btn>
               </template>
+
               <v-card>
                 <v-card-title>
-                  <span class="headline text-center" >{{ formTitle }}</span>
+                  <span class="headline text-center">{{ formTitle }}</span>
                 </v-card-title>
 
                 <v-card-text>
                   <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.name"
-                          label="Nombre"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedItem.description"
-                          label="Descripcion"
-                        ></v-text-field>
-                      </v-col>
-                     <v-col cols="12" sm="6" md="4">
-                        <template v-slot:item.status="{ item }">
-                            <v-card-text v-if="item.status" class="blue--text">Activo</v-card-text>
-                            <v-card-text v-if="!item.status" class="red--text">Inactivo</v-card-text>
-                        </template>
-                      </v-col>                 
+                    <v-layout wrap>
+                      <v-flex xs12 sm12 md12>
+                        <v-text-field v-model="name" label="Nombre"></v-text-field>
+                      </v-flex>
+                      <v-flex xs12 sm12 md12>
+                        <v-text-field v-model="description" label="Descripcion"></v-text-field>
+                      </v-flex>
+                    </v-layout>
                     </v-row>
                   </v-container>
                 </v-card-text>
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close"
-                    >Cancel</v-btn
-                  >
-                  <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                  <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
+                  <v-btn color="blue darken-1" text @click="save">Guardar</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
           </v-toolbar>
         </template>
-        <template v-slot:item.options="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)">
-            edit
-          </v-icon>
-          <v-icon small @click="deleteItem(item)">
-            delete
-          </v-icon>
+
+        <template v-slot:item.status="{ item }">
+          <v-card-text v-if="item.status" class="blue--text">Activo</v-card-text>
+          <v-card-text v-if="!item.status" class="red--text">Inactivo</v-card-text>
         </template>
+
+        <template v-slot:item.options="{ item }">
+          <v-icon small class="mr-3" @click="editItem(item)">edit</v-icon>
+          <v-icon small @click="deleteItem(item)">delete</v-icon>
+        </template>
+
         <template v-slot:no-data>
-          <v-btn color="primary" @click="initialize">Resetear</v-btn>
+          <v-btn color="primary">Resetear</v-btn>
         </template>
       </v-data-table>
     </v-flex>
@@ -78,40 +75,35 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 export default {
   data() {
     return {
-      categorias:[],
+      categorias: [],
       dialog: false,
       headers: [
         { text: "Opciones", value: "options", sortable: false },
         { text: "Nombre", value: "name" },
         { text: "Descripcion", value: "description", sortable: false },
-        { text: "Estado", value: "status" }        
+        { text: "Estado", value: "status" }
       ],
-      search: '',
+      search: "",
       editedIndex: -1,
       editedItem: {
         name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
+        description: ""
       },
-      defaultItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0
-      }
+      id: "",
+      name: "",
+      description: ""
     };
   },
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+      return this.editedIndex === -1
+        ? "Nueva Categoria"
+        : "Actualizar Categoria";
     }
   },
 
@@ -121,16 +113,20 @@ export default {
     }
   },
 
-  created() {    
+  created() {
     this.list();
   },
+
   methods: {
-    list(){
-        let me=this;
-        axios.get('api/Categories/List').then(function(response){
-            me.categorias = response.data;
-        }).catch(function(error){
-            console.log(error);
+    list() {
+      let me = this;
+      axios
+        .get("api/Categories/List")
+        .then(function(response) {
+          me.categorias = response.data;
+        })
+        .catch(function(error) {
+          console.log(error);
         });
     },
 
@@ -148,19 +144,33 @@ export default {
 
     close() {
       this.dialog = false;
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+    },
+
+    clear() {
+      this.id = "";
+      this.name = "";
+      this.description = "";
     },
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        this.desserts.push(this.editedItem);
+        //Metodo para editar
+      } else {        
+        let me = this;
+        axios
+          .post("api/Categories/Create", {
+            'name': me.name,
+            'description': me.description
+          })
+          .then(function(response) {
+            me.close();
+            me.list();
+            me.clear();
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
       }
-      this.close();
     }
   }
 };
